@@ -15,6 +15,8 @@ stages:
       region_id: ${CF_REGION_ID}
       organization: ${CF_ORGANIZATION}
       space: ${CF_SPACE}
+      api_key: YiekmH95k4ZimN8ipEp-NY16XVY0ncsr-1pIbhdRVIlK
+      kubernetes_cluster: ddcao27aug
     IMAGE_NAME: ${CF_APP}
     USE_CACHED_LAYERS: 'true'
     COMMAND: |
