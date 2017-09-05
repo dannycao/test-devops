@@ -18,7 +18,7 @@ stages:
       api_key: YiekmH95k4ZimN8ipEp-NY16XVY0ncsr-1pIbhdRVIlK
       kubernetes_cluster: ddcao27aug
     IMAGE_NAME: ${CF_APP}
-    USE_CACHED_LAYERS: 'true'
+    USE_CACHED_LAYERS: 'false'
     COMMAND: |
       #!/bin/bash
       # The following colors have been defined to help with presentation of logs: green, red, label_color, no_color.  
