@@ -11,6 +11,7 @@ stages:
   - name: Container Build
     type: builder
     artifact_dir : ''
+    extension_id: ibm.devops.services.pipeline.container.builder
     build_type: shell
     script: |-
       #!/bin/bash
