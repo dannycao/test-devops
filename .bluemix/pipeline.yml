@@ -12,7 +12,6 @@ stages:
     type: builder
     artifact_dir : ''
     extension_id: ibm.devops.services.pipeline.container.builder
-    build_type: shell
     script: |-
       #!/bin/bash
       # The following colors have been defined to help with presentation of logs: green, red, label_color, no_color.  
