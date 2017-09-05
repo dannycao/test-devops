@@ -10,8 +10,14 @@ stages:
     artifact_dir : ''
   - name: Container Build
     type: builder
-    build_type: shell
-    script: |-
+    extension_id: ibm.devops.services.pipeline.container.builder
+    target:
+      region_id: ${CF_REGION_ID}
+      organization: ${CF_ORGANIZATION}
+      space: ${CF_SPACE}
+    IMAGE_NAME: ${CF_APP}
+    USE_CACHED_LAYERS: 'true'
+    COMMAND: |
       #!/bin/bash
       # The following colors have been defined to help with presentation of logs: green, red, label_color, no_color.  
       echo -e "${label_color}Starting build script${no_color}"
@@ -27,13 +33,8 @@ stages:
       # Build Container via Dockerfile     #
       ######################################
       
-      CCS_REGISTRY_HOST=registry.stage1.ng.bluemix.net
-      NAMESPACE=ddcao_5sep_namespace
-      IMAGE_NAME=ddcao-5sep-app
-      APPLICATION_VERSION=1
-      REGISTRY_URL=${CCS_REGISTRY_HOST}/${NAMESPACE}
-      FULL_REPOSITORY_NAME=${REGISTRY_URL}/${IMAGE_NAME}:${APPLICATION_VERSION}
-      echo -e "${label_color}FULL_REPOSITORY_NAME ${FULL_REPOSITORY_NAME} ${no_color}"
+      # REGISTRY_URL=${CCS_REGISTRY_HOST}/${NAMESPACE}
+      # FULL_REPOSITORY_NAME=${REGISTRY_URL}/${IMAGE_NAME}:${APPLICATION_VERSION}   
       
       # Possible adding retries to build the image
       if [ -f Dockerfile ]; then 
