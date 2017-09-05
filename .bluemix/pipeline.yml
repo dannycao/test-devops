@@ -10,36 +10,34 @@ stages:
     artifact_dir : ''
   - name: Container Build
     type: builder
-    extension_id: ibm.devops.services.pipeline.container.builder
-    target:
-      region_id: ${CF_REGION_ID}
-      organization: ${CF_ORGANIZATION}
-      space: ${CF_SPACE}
-    COMMAND: |-
+    build_type: shell
+    script: |-
       #!/bin/bash
       # The following colors have been defined to help with presentation of logs: green, red, label_color, no_color.  
-      log_and_echo "$LABEL" "Starting build script"
-
-      # The IBM Container BM Containers plug-in (cf ic), Git client (git), and IDS Inventory CLI (ids-inv) have been installed.
+      echo -e "${label_color}Starting build script${no_color}"
+      
+      # The IBM Container Service CLI (ice), Git client (git), IDS Inventory CLI (ids-inv) and Python 2.7.3 (python) have been installed.
       # Based on the organization and space selected in the Job credentials are in place for both IBM Container Service and IBM Bluemix 
       #####################
       # Run unit tests    #
       #####################
-      log_and_echo "$LABEL" "No unit tests cases have been checked in"
-
+      echo -e "${label_color}No unit tests cases have been checked in ${no_color}"
+      
       ######################################
       # Build Container via Dockerfile     #
       ######################################
-
+      
+      CCS_REGISTRY_HOST=registry.stage1.ng.bluemix.net
       NAMESPACE=ddcao_5sep_namespace
-      IMAGE_NAME=ddcao-5sep-1251
+      IMAGE_NAME=ddcao-5sep-app
+      APPLICATION_VERSION=1
       REGISTRY_URL=${CCS_REGISTRY_HOST}/${NAMESPACE}
       FULL_REPOSITORY_NAME=${REGISTRY_URL}/${IMAGE_NAME}:${APPLICATION_VERSION}
-      log_and_echo "$LABEL" "FULL_REPOSITORY_NAME ${FULL_REPOSITORY_NAME}"
-      # If you wish to receive slack notifications, set SLACK_WEBHOOK_PATH as a property on the stage.
-
+      echo -e "${label_color}FULL_REPOSITORY_NAME ${FULL_REPOSITORY_NAME} ${no_color}"
+      
+      # Possible adding retries to build the image
       if [ -f Dockerfile ]; then 
-          log_and_echo "$LABEL" "Building ${FULL_REPOSITORY_NAME}"
+          echo -e "${label_color}BUILDING ${FULL_REPOSITORY_NAME} ${no_color}"
           ${EXT_DIR}/utilities/sendMessage.sh -l info -m "New container build requested for ${FULL_REPOSITORY_NAME}"
           # build image
           BUILD_COMMAND=""
@@ -52,28 +50,38 @@ stages:
               ice_retry ${BUILD_COMMAND}
               RESULT=$?
           fi 
-
+      
           if [ $RESULT -ne 0 ]; then
-              log_and_echo "$ERROR" "Error building image"
-              ice_retry info 
-              ice_retry images
+              echo -e "${red}Error building image ${no_color}" | tee -a "$ERROR_LOG_FILE"
+              echo "Build command: ice ${BUILD_COMMAND}"
+              ice info 
+              ice images
               ${EXT_DIR}/print_help.sh
-              ${EXT_DIR}/utilities/sendMessage.sh -l bad -m "Container build of ${FULL_REPOSITORY_NAME} failed. $(get_error_info)"
+              ${EXT_DIR}/utilities/sendMessage.sh -l bad -m "Container build of ${FULL_REPOSITORY_NAME} failed"
               exit 1
           else
-              log_and_echo "$SUCCESSFUL" "Container build of ${FULL_REPOSITORY_NAME} was successful"
               ${EXT_DIR}/utilities/sendMessage.sh -l good -m "Container build of ${FULL_REPOSITORY_NAME} was successful"
+              echo -e "${green}Container build of ${FULL_REPOSITORY_NAME} was successful ${no_color}"
           fi  
       else 
-          log_and_echo "$ERROR" "Dockerfile not found in project"
-          ${EXT_DIR}/utilities/sendMessage.sh -l bad -m "Failed to get Dockerfile. $(get_error_info)"
+          echo -e "${red}Dockerfile not found at the repository root${no_color}"
           exit 1
       fi  
-
+      
       ######################################################################################
       # Copy any artifacts that will be needed for deployment and testing to $WORKSPACE    #
       ######################################################################################
       echo "IMAGE_NAME=${FULL_REPOSITORY_NAME}" >> $ARCHIVE_DIR/build.properties
+      if [ -f deployment.yml ]; then
+          #Update deployment.yml with image name
+          echo "UPDATING DEPLOYMENT MANIFEST:"
+          sed -i "s~^\([[:blank:]]*\)image:.*$~\1image: ${FULL_REPOSITORY_NAME}~" deployment.yml
+          cat deployment.yml
+          cp deployment.yml $ARCHIVE_DIR/
+      else 
+          echo -e "${red}Kubernetes deployment file 'deployment.yml' not found at the repository root${no_color}"
+          exit 1
+      fi
   - name: Post Build
     type: builder
     artifact_dir: ''
