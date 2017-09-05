@@ -3,7 +3,7 @@
 replicaCount: 1
 revisionHistoryLimit: 1
 image:
-  repository: registry.stage1.ng.bluemix.net/ddcao_ic_namespace/ddcao-5sep-243
+  repository: registry.stage1.ng.bluemix.net/ddcao_5sep_namespace/ddcao-5sep-529
   tag: v1.0.0
   pullPolicy: Always
 livenessProbe:
