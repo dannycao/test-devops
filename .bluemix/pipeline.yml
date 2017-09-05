@@ -15,8 +15,6 @@ stages:
       region_id: ${CF_REGION_ID}
       organization: ${CF_ORGANIZATION}
       space: ${CF_SPACE}
-      api_key: YiekmH95k4ZimN8ipEp-NY16XVY0ncsr-1pIbhdRVIlK
-      kubernetes_cluster: ddcao27aug
     IMAGE_NAME: ${CF_APP}
     USE_CACHED_LAYERS: 'false'
     COMMAND: |
@@ -35,8 +33,8 @@ stages:
       # Build Container via Dockerfile     #
       ######################################
       
-      # REGISTRY_URL=${CCS_REGISTRY_HOST}/${NAMESPACE}
-      # FULL_REPOSITORY_NAME=${REGISTRY_URL}/${IMAGE_NAME}:${APPLICATION_VERSION}   
+      REGISTRY_URL=${CCS_REGISTRY_HOST}/${NAMESPACE}
+      FULL_REPOSITORY_NAME=${REGISTRY_URL}/${IMAGE_NAME}:v1.0.0  
       
       # Possible adding retries to build the image
       if [ -f Dockerfile ]; then 
@@ -75,16 +73,16 @@ stages:
       # Copy any artifacts that will be needed for deployment and testing to $WORKSPACE    #
       ######################################################################################
       echo "IMAGE_NAME=${FULL_REPOSITORY_NAME}" >> $ARCHIVE_DIR/build.properties
-      if [ -f deployment.yml ]; then
-          #Update deployment.yml with image name
-          echo "UPDATING DEPLOYMENT MANIFEST:"
-          sed -i "s~^\([[:blank:]]*\)image:.*$~\1image: ${FULL_REPOSITORY_NAME}~" deployment.yml
-          cat deployment.yml
-          cp deployment.yml $ARCHIVE_DIR/
-      else 
-          echo -e "${red}Kubernetes deployment file 'deployment.yml' not found at the repository root${no_color}"
-          exit 1
-      fi
+      # if [ -f deployment.yml ]; then
+      #     #Update deployment.yml with image name
+      #     echo "UPDATING DEPLOYMENT MANIFEST:"
+      #     sed -i "s~^\([[:blank:]]*\)image:.*$~\1image: ${FULL_REPOSITORY_NAME}~" deployment.yml
+      #     cat deployment.yml
+      #     cp deployment.yml $ARCHIVE_DIR/
+      # else 
+      #     echo -e "${red}Kubernetes deployment file 'deployment.yml' not found at the repository root${no_color}"
+      #     exit 1
+      # fi
   - name: Post Build
     type: builder
     artifact_dir: ''
@@ -112,8 +110,38 @@ stages:
       region_id: ${CF_REGION_ID}
       organization: ${CF_ORGANIZATION}
       space: ${CF_SPACE}
-      application: ${CF_APP}
-    script: |-
+      api_key: YiekmH95k4ZimN8ipEp-NY16XVY0ncsr-1pIbhdRVIlK
+      kubernetes_cluster: ddcao27aug
+    script: |
       #!/bin/bash
-      # cf push "${CF_APP}"
-      # cf logs "${CF_APP}" --recent
+      #set -x
+
+      helm init
+      helm install ./chart/ddcaocoolapp
+      echo "finished installing chart"
+
+      # #Check cluster availability
+      # ip_addr=$(bx cs workers $PIPELINE_KUBERNETES_CLUSTER_NAME | grep normal | awk '{ print $2 }')
+      # if [ -z $ip_addr ]; then
+      #   echo "$PIPELINE_KUBERNETES_CLUSTER_NAME not created or workers not ready"
+      #   exit 1
+      # fi
+
+      # #Connect to a different container-service api by uncommenting and specifying an api endpoint
+      # #bx cs init --host https://us-south.containers.bluemix.net
+      # echo ""
+      # echo "DEPLOYING USING HELM CHART:"
+      # cat deployment.yml
+      # kubectl apply -f deployment.yml  
+
+      # echo ""
+      # echo "DEPLOYED SERVICE:"
+      # kubectl describe services hello-service
+
+      # echo ""
+      # echo "DEPLOYED PODS:"
+      # kubectl describe pods --selector app=hello-app
+
+      # port=$(kubectl get services | grep hello-service | sed 's/.*:\([0-9]*\).*/\1/g')
+      # echo ""
+      # echo "VIEW THE APPLICATION AT: http://$ip_addr:$port"

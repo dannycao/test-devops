@@ -3,7 +3,7 @@
 replicaCount: 1
 revisionHistoryLimit: 1
 image:
-  repository: registry.mybluemix.net/replace-me-namespace/ddcaocoolapp
+  repository: registry.stage1.ng.bluemix.net/ddcao_ic_namespace/ddcao-5sep-243
   tag: v1.0.0
   pullPolicy: Always
 livenessProbe:
