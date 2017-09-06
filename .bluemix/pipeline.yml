@@ -48,7 +48,7 @@ stages:
             # build image
             echo "BUILDING Dockerfile"
 
-            sudo docker build -t "${FULL_REPOSITORY_NAME}" .
+            echo '' | sudo -S docker build -t "${FULL_REPOSITORY_NAME}" .
 
             echo "BUILDING Dockerfile finished"
 
