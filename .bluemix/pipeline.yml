@@ -51,11 +51,11 @@ stages:
         # build image
         echo "BUILDING Dockerfile"
 
-        docker build -t "${FULL_REPOSITORY_NAME}" .
+        sudo docker build -t "${FULL_REPOSITORY_NAME}" .
 
         echo "BUILDING Dockerfile finished"
 
-        docker push "${FULL_REPOSITORY_NAME}"
+        sudo docker push "${FULL_REPOSITORY_NAME}"
       else 
         echo "Dockerfile not found at the repository root"
         exit 1
