@@ -5,9 +5,6 @@ stages:
     branch: master
     service: ${REPO}
   jobs:
-  - name: Build
-    type: builder
-    artifact_dir : ''
   - name: Container Build
     type: builder
     artifact_dir: ''
@@ -22,17 +19,17 @@ stages:
       echo "FULL_REPOSITORY_NAME: ${FULL_REPOSITORY_NAME}"
       
       if [ -f Dockerfile ]; then 
-          # build image
-          echo "BUILDING Dockerfile"
+        # build image
+        echo "BUILDING Dockerfile"
 
-          docker build -t "${FULL_REPOSITORY_NAME}" .
+        docker build -t "${FULL_REPOSITORY_NAME}" .
 
-          echo "BUILDING Dockerfile finished"
+        echo "BUILDING Dockerfile finished"
 
-          docker push "${FULL_REPOSITORY_NAME}"
+        docker push "${FULL_REPOSITORY_NAME}"
       else 
-          echo "Dockerfile not found at the repository root"
-          exit 1
+        echo "Dockerfile not found at the repository root"
+        exit 1
       fi
   - name: Post Build
     type: builder
