@@ -15,7 +15,7 @@ stages:
       ###########################################################
       # Install Docker                                          #
       ###########################################################
-      install_docker() {
+      install_docker_run_build() {
           echo "installing docker"
           echo "TMPDIR: ${TMPDIR}"
           sudo apt-get -y install apt-transport-https ca-certificates &> $TMPDIR/dockerinst.out
@@ -37,29 +37,29 @@ stages:
           fi
           DOCKER_VER=$(docker -v)
           echo "Successfully installed ${DOCKER_VER}"
+
+          IMAGE_NAME=ddcao-5sep-529
+          REGISTRY_URL=registry.stage1.ng.bluemix.net/ddcao_5sep_namespace
+          FULL_REPOSITORY_NAME=${REGISTRY_URL}/${IMAGE_NAME}:v1.0.0
+
+          echo "FULL_REPOSITORY_NAME: ${FULL_REPOSITORY_NAME}"
+          
+          if [ -f Dockerfile ]; then 
+            # build image
+            echo "BUILDING Dockerfile"
+
+            sudo docker build -t "${FULL_REPOSITORY_NAME}" .
+
+            echo "BUILDING Dockerfile finished"
+
+            sudo docker push "${FULL_REPOSITORY_NAME}"
+          else 
+            echo "Dockerfile not found at the repository root"
+            exit 1
+          fi
       }
 
-      install_docker
-      
-      IMAGE_NAME=ddcao-5sep-529
-      REGISTRY_URL=registry.stage1.ng.bluemix.net/ddcao_5sep_namespace
-      FULL_REPOSITORY_NAME=${REGISTRY_URL}/${IMAGE_NAME}:v1.0.0
-
-      echo "FULL_REPOSITORY_NAME: ${FULL_REPOSITORY_NAME}"
-      
-      if [ -f Dockerfile ]; then 
-        # build image
-        echo "BUILDING Dockerfile"
-
-        sudo docker build -t "${FULL_REPOSITORY_NAME}" .
-
-        echo "BUILDING Dockerfile finished"
-
-        sudo docker push "${FULL_REPOSITORY_NAME}"
-      else 
-        echo "Dockerfile not found at the repository root"
-        exit 1
-      fi
+      install_docker_run_build
   - name: Post Build
     type: builder
     artifact_dir: ''
