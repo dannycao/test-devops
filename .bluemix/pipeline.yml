@@ -18,16 +18,16 @@ stages:
       install_docker_run_build() {
           echo "installing docker"
           echo "TMPDIR: ${TMPDIR}"
-          apt-get -y install apt-transport-https ca-certificates &> $TMPDIR/dockerinst.out
-          apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D &>> $TMPDIR/dockerinst.out
-          add-apt-repository "deb https://apt.dockerproject.org/repo ubuntu-precise main" &>> $TMPDIR/dockerinst.out
-          apt-get update &>> $TMPDIR/dockerinst.out
-          apt-get -y install docker-engine &>> $TMPDIR/dockerinst.out
+          sudo apt-get -y install apt-transport-https ca-certificates &> $TMPDIR/dockerinst.out
+          sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D &>> $TMPDIR/dockerinst.out
+          sudo add-apt-repository "deb https://apt.dockerproject.org/repo ubuntu-precise main" &>> $TMPDIR/dockerinst.out
+          sudo apt-get update &>> $TMPDIR/dockerinst.out
+          sudo apt-get -y install docker-engine &>> $TMPDIR/dockerinst.out
           local RESULT=$?
           if [ $RESULT -ne 0 ]; then
               echo "Installing docker.io failed with return code ${RESULT}"
               cat $TMPDIR/dockerinst.out
-              apt-get -y install docker.engine &> $TMPDIR/dockerinst.out
+              sudo apt-get -y install docker.engine &> $TMPDIR/dockerinst.out
               RESULT=$?
               if [ $RESULT -ne 0 ]; then
                   echo "Installing docker.engine failed with return code ${RESULT}"
