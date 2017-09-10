@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: "{{  .Chart.Name }}-deployment"
+  name: "{{  .Chart.Name }}"
   labels:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 spec:
@@ -10,7 +10,7 @@ spec:
   template:
     metadata:
       labels:
-        app: "{{  .Chart.Name }}-selector"
+        app: "{{  .Chart.Name }}"
     spec:
      containers:
       - name: {{  .Chart.Name  }}
