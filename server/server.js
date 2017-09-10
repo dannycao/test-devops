@@ -13,6 +13,6 @@ require('./routers/index')(app);
 
 const port = process.env.PORT || localConfig.port;
 app.listen(port, function(){
-	logger.info(`Dcao Project 7sep listening on http://localhost:${port}`);
+	logger.info(`dcaoproject7sep listening on http://localhost:${port}`);
 	
 });

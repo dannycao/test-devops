@@ -1,4 +1,4 @@
-# Dcao Project 7sep
+# dcaoproject7sep
 A generated Bluemix application
 
 [![](https://img.shields.io/badge/bluemix-powered-blue.svg)](https://bluemix.net)
