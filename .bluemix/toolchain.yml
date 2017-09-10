@@ -32,6 +32,8 @@ build:
       CF_SPACE: "{{deploy.parameters.dev-space}}"
       CF_ORGANIZATION: "{{deploy.parameters.dev-organization}}"
       CF_REGION_ID: "{{deploy.parameters.dev-region}}"
+      KUBE_CLUSTER_NAME: '{{deploy.parameters.kube-cluster-name}}'
+      API_KEY: '{{deploy.parameters.api-key}}'
      execute: true
     services: ["repo"]
   hidden: ["form"]
@@ -47,3 +49,4 @@ deploy:
   service-category: pipeline
   parameters:
     app-name: dcao-project-7sep-app
+    kube-cluster-name: ddcao1sep
